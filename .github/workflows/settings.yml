@@ -1,0 +1,44 @@
+name: Build Settings
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+
+jobs:
+  Pipeline_Dev:
+    if: github.ref == 'refs/heads/dev'
+    uses: Score-Milk/RPS-server/.github/workflows/deployment.yml@dev
+    with:
+      environment_value: 'dev'
+      aws_region: 'us-east-2'
+      ecr_repository: 'rps-server-dev'
+      ecs_service: 'rps-server-service'
+      ecs_cluster: 'scoremilk-dev'
+      task_definition_family: 'rps-server-dev'
+      container_name: 'rps-server'
+      environment_name: 'DEVELOPMENT'
+      work_dir: './infra/aws/terraform'
+    secrets:
+      slack_deployer_bot_token: ${{ secrets.SLACK_DEPLOYER_BOT_TOKEN }}
+      aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
+      aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  Pipeline_Pro:
+    if: github.ref == 'refs/heads/main'
+    uses: Score-Milk/RPS-server/.github/workflows/deployment.yml@main
+    with:
+      environment_value: 'pro'
+      aws_region: 'us-east-2'
+      ecr_repository: 'rps-server-pro'
+      ecs_service: 'rps-server-service'
+      ecs_cluster: 'scoremilk'
+      task_definition_family: 'rps-server-pro'
+      container_name: 'rps-server'
+      environment_name: 'PRODUCTION'
+      work_dir: './infra/aws/terraform'
+    secrets:
+      slack_deployer_bot_token: ${{ secrets.SLACK_DEPLOYER_BOT_TOKEN }}
+      aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

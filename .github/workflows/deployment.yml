@@ -1,0 +1,229 @@
+name: Execute Deployment
+
+on:
+  workflow_call:
+    inputs:
+      environment_value:
+        description: 'Environment value'
+        required: true
+        default: 'dev'
+        type: string
+      aws_region:
+        description: 'AWS region'
+        required: true
+        default: 'us-east-2'
+        type: string
+      ecr_repository:
+        description: 'ECR repository'
+        required: true
+        default: 'rps-server-dev'
+        type: string
+      ecs_service:
+        description: 'ECS service'
+        required: true
+        default: 'rps-server-service'
+        type: string
+      ecs_cluster:
+        description: 'ECS cluster'
+        required: true
+        default: 'scoremilk-dev'
+        type: string
+      task_definition_family:
+        description: 'Task definition family'
+        required: true
+        default: 'rps-server-dev'
+        type: string
+      container_name:
+        description: 'Container name'
+        required: true
+        default: 'rps-server'
+        type: string
+      environment_name:
+        description: 'Environment name'
+        required: true
+        default: 'DEVELOPMENT'
+        type: string
+      work_dir:
+        description: 'Work directory'
+        required: true
+        default: './infra/aws/terraform/dev'
+        type: string
+    secrets:
+      slack_deployer_bot_token:
+        description: 'Slack deployer bot token'
+        required: true
+      aws_access_key_id:
+        description: 'AWS access key ID'
+        required: true
+      aws_secret_access_key:
+        description: 'AWS secret access key'
+        required: true
+
+jobs:
+  provision-build-deploy:
+    name: provision, build and deploy
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment_value }}
+
+    steps:
+      - name: Set outputs
+        id: vars
+        run: echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-7`" >> $GITHUB_ENV
+
+      - name: Post to a Slack channel - STARTED
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: 'builds'
+          payload: |
+            {
+              "text": "${{ inputs.container_name }} - deploying to ${{ inputs.environment_name }}",
+              "attachments": [
+                  {
+                      "color": "#9DC08B",
+                      "blocks": [
+                          {
+                              "type": "section",
+                              "text": {
+                                  "type": "mrkdwn",
+                                  "text": "*Deploying <https://github.com/${{github.repository}}|${{github.event.repository.name}}> to ${{inputs.environment_name}}*\n*Started by changes from ${{github.actor}} on commit <https://github.com/${{github.repository}}/commit/${{github.sha}}|${{env.SHORT_SHA}}>*\n*STARTED - <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|see logs>*"
+                              }
+                          }
+                      ]
+                  }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.slack_deployer_bot_token }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@13d241b293754004c80624b5567555c4a39ffbe3
+        with:
+          aws-access-key-id: ${{ secrets.aws_access_key_id }}
+          aws-secret-access-key: ${{ secrets.aws_secret_access_key }}
+          aws-region: ${{ inputs.aws_region }}
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Format
+        id: fmt
+        run: cd ${{ inputs.work_dir }} && terraform fmt -check
+
+      - name: Terraform Init
+        id: init
+        run: cd ${{ inputs.work_dir }} && terraform init -backend-config=${{ inputs.environment_value }}/backend.hcl
+
+      - name: Terraform Validate
+        id: validate
+        run: cd ${{ inputs.work_dir }} && terraform validate -no-color
+
+      - name: Terraform Plan
+        id: plan
+        run: cd ${{ inputs.work_dir }} && terraform plan -no-color -input=false -var-file=${{ inputs.environment_value }}/terraform.tfvars
+        continue-on-error: true
+
+      - name: Terraform Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
+
+      - name: Terraform Apply
+        run: |
+          cd ${{ inputs.work_dir }} && \
+          terraform apply -auto-approve -input=false -var-file=${{ inputs.environment_value }}/terraform.tfvars
+        continue-on-error: true
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@aaf69d68aa3fb14c1d5a6be9ac61fe15b48453a2
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/${{ inputs.ecr_repository }}:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/${{ inputs.ecr_repository }}:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/${{ inputs.ecr_repository }}:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Download task definition
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition ${{ inputs.task_definition_family }} \
+            --query taskDefinition > task-definition.json
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@97587c9d45a4930bf0e3da8dd2feb2a463cf4a3a
+        env:
+          OUTPUT_IMAGE: ${{ needs.build.outputs.image }}
+        with:
+          task-definition: task-definition.json
+          container-name: ${{ inputs.container_name }}
+          image: ${{ steps.build-image.outputs.image }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ inputs.ecs_service }}
+          cluster: ${{ inputs.ecs_cluster }}
+          wait-for-service-stability: false
+
+      - name: Post to a Slack channel - SUCCESS
+        if: ${{ success() }}
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: 'builds'
+          payload: |
+            {
+              "text": "${{ inputs.container_name }} - deploying to ${{ inputs.environment_name }}",
+              "attachments": [
+                  {
+                      "color": "#9DC08B",
+                      "blocks": [
+                          {
+                              "type": "section",
+                              "text": {
+                                  "type": "mrkdwn",
+                                  "text": "*Deploying <https://github.com/${{github.repository}}|${{github.event.repository.name}}> to ${{inputs.environment_name}}*\n*Started by changes from ${{github.actor}} on commit <https://github.com/${{github.repository}}/commit/${{github.sha}}|${{env.SHORT_SHA}}>*\n*SUCCESS - <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|see logs>*"
+                              }
+                          }
+                      ]
+                  }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.slack_deployer_bot_token }}
+
+      - name: Post to a Slack channel - FAILURE
+        if: ${{ failure() }}
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: 'builds'
+          payload: |
+            {
+              "text": "${{ inputs.container_name }} - deploying to ${{ inputs.environment_name }}",
+              "attachments": [
+                  {
+                      "color": "#E21818",
+                      "blocks": [
+                          {
+                              "type": "section",
+                              "text": {
+                                  "type": "mrkdwn",
+                                  "text": "*Deploying <https://github.com/${{github.repository}}|${{github.event.repository.name}}> to ${{inputs.environment_name}}*\n*Started by changes from ${{github.actor}} on commit <https://github.com/${{github.repository}}/commit/${{github.sha}}|${{env.SHORT_SHA}}>*\n*FAILURE - <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|see logs>*"
+                              }
+                          }
+                      ]
+                  }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.slack_deployer_bot_token }}

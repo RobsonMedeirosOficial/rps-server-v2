@@ -1,0 +1,16 @@
+application_domain_name             = "rps-server-dev.scoremilk.com"
+ecr_repository_name                 = "rps-server-dev"
+ecr_policy_name                     = "GiveECRFullAccessSmRpsServerDev"
+ecs_cluster_name                    = "scoremilk-dev"
+alb_name                            = "rps-server-alb-dev"
+alb_security_group_name             = "rps-server-alb-sg-dev"
+target_group_name                   = "rps-server-tg-dev"
+ecs_security_group_name             = "rps-server-ecs-sg-dev"
+log_group_name                      = "rps-server-dev"
+ecs_service_container_cpu           = 1024
+ecs_service_container_memory        = 3072
+ecs_service_container_port          = 3000
+ecs_autoscaling_min_capacity        = 1
+ecs_autoscaling_max_capacity        = 1
+ecs_autoscaling_cpu_target_value    = 60
+ecs_autoscaling_memory_target_value = 80

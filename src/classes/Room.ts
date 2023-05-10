@@ -108,6 +108,43 @@ export default class Room {
                   console.log(`\n EMPATE!!`);
                   console.log(`\n Vamos tentar outra vez...`);
 
+
+
+
+
+
+
+
+
+
+                  if(this.playerList[0].rps=== this.playerList[1].rps){
+                    let listRandom = [0, 1, 2];
+                    let rps =0
+                    this.playerList.forEach(player=>{
+                      if(true){
+                        rps = Math.floor(Math.random() * listRandom.length);
+                        player.rps=rps
+                        console.log(`O player(${player.playerID}) selecionou o rps(${player.rps}) randomicamente.`);
+                        
+                        player.socket.emit("player_random_rps",""+player.rps)
+                      }
+                    })
+                  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                   // houve empate, precisamos reiniciar o pre-game
                   this.preGameDraws++
                   setTimeout(()=>{

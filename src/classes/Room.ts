@@ -112,44 +112,14 @@ export default class Room {
 
 
 
-
-
-
-
-
-                  if(this.playerList[0].rps=== this.playerList[1].rps){
-                    let listRandom = [0, 1, 2];
-                    let rps =0
-                    this.playerList.forEach(player=>{
-                      if(true){
-                        rps = Math.floor(Math.random() * listRandom.length);
-                        player.rps=rps
-                        console.log(`O player(${player.playerID}) selecionou o rps(${player.rps}) randomicamente.`);
-                        
-                        player.socket.emit("player_random_rps",""+player.rps)
-                      }
-                    })
-                  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                   // houve empate, precisamos reiniciar o pre-game
                   this.preGameDraws++
                   setTimeout(()=>{
                     io.in(this.roomID).emit("preGameAgain","")
                     this.SelectionTimer(timerMax)
+                    this.playerList.forEach(p=>{
+                      p.rps=-1
+                    })
                   },3000)
                 }else{
                   // houve um vencedor.

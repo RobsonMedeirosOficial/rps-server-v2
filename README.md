@@ -1,2 +1,2 @@
-# RPS-server
+# rps-server-v2
 

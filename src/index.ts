@@ -74,20 +74,24 @@ console.log(`IS RUNNING: ${room?.isGameRunning}`);
             rpsList[2].rpsAmount=data.countScissor
             rpsList = rpsList.sort((a,b)=>b.rpsAmount - a.rpsAmount)
 
-            let playerWinner: any = undefined
-
+            let playerWinner = false
+            let playerID =""
+            let amount =0
             room.playerList.forEach((p:any)=>{
               if(p && p.rps===rpsList[0].rps){
                 playerWinner=p
+                playerWinner = true
+                playerID=p.playerID
+                amount=p.rpsAmount
               }
             })
-            console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+            console.log(">>>>>>>>>>>>>>>>>>>>>>  playerWinner");
             console.log(playerWinner);
             
             if(playerWinner){
               // Temos um vencedor
               console.log(`\nVITÓRIA *************************************************************`);
-              console.log(`O player(${playerWinner.playerID}) venceu | points: ${playerWinner.rpsAmount}`);
+              console.log(`O player(${playerWinner}) venceu | points: ${amount}`);
             
             }else{
               // Temos um empate

@@ -146,6 +146,7 @@ io.on('connection', async(socket:any) => {
               room.playerList.forEach(p=>{
                 p.rps=-1
               })
+              room.StopTimer()
               io.in(room.roomID).emit("gameDraw")
               io.in(room.roomID).emit("setTimer","10")
               room.SelectionTimer(10)

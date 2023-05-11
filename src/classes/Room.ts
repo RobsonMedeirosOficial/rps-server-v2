@@ -95,7 +95,7 @@ export default class Room {
               
               // no caso empate por 3 vezes o randon resultará
               // num desempate
-              if(this.preGameDraws>0){
+              if(this.preGameDraws>1){
 
                     let listRandom = [0, 1, 2];
                     let rps = Math.floor(Math.random() * listRandom.length);

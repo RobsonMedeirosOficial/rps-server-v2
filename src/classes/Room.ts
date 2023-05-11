@@ -130,7 +130,9 @@ export default class Room {
                   // vamos para proxima etapa, embaralhar
                   setTimeout(()=>{
                     io.in(this.roomID).emit("scramble",winner)
-                    this.CountTimeToScramble()
+                    io.in(this.roomID).emit("setTimer","5")
+
+                    this.CountTimeToScramble(5)
     
                   },3000)
 
@@ -148,6 +150,37 @@ export default class Room {
         }
       }, 1000);
     }
+
+    CountTimeToScramble(timerMax:number){
+      this.timer = timerMax;;
+      this.setInterval = setInterval(() => {
+        if(this.timer > 0){
+          console.log(`Timer: ${this.timer}`);
+          this.timer--;
+          io.in(this.roomID).emit("timerRoom", this.timer.toString());
+          if(this.timer <= 0){
+            this.StopTimer()
+            if(this.CheckPlayersInRoom()){
+              console.log(`\nAgora é hora da batalha...`);
+              console.log(`\nQue vença o melhor!!!`);
+  
+                io.in(this.roomID).emit("startGame","")
+                // this.CountTimeToEndGame(60)
+              }
+            else{
+              console.log("Um player está fora, precisamos reiniciar a room");
+              io.in(this.roomID).emit("removePlayer","")
+            }
+  
+  
+  
+          }
+        }
+      }, 1000);
+    }
+
+
+
 
     GetPreGameDataResult(result:string=""){
       let playerList:any[]=[]
@@ -266,7 +299,7 @@ export default class Room {
               console.log(`\nAgora é hora de embaralhar, o vencedor embaralha...`);
               let winner = this.GetPlayerIDWinner()
                 io.in(this.roomID).emit("scramble",winner)
-                this.CountTimeToScramble()
+                this.CountTimeToScramble(5)
               }
             else{
               console.log("Um player está fora, precisamos reiniciar a room");
@@ -279,34 +312,7 @@ export default class Room {
       }, 1000);
     }
   
-    CountTimeToScramble(){
-      this.timer = this.timerMax * Math.floor(1.6);;
-      this.setInterval = setInterval(() => {
-        if(this.timer > 0){
-          console.log(`Timer: ${this.timer}`);
-          this.timer--;
-          io.in(this.roomID).emit("timerRoom", this.timer.toString());
-          if(this.timer <= 0){
-            clearInterval(this.setInterval);
-            this.setInterval=undefined
-            if(this.CheckPlayersInRoom()){
-              console.log(`\nAgora é hora da batalha...`);
-              console.log(`\nQue vença o melhor!!!`);
-  
-                io.in(this.roomID).emit("startGame","")
-                this.CountTimeToEndGame(60)
-              }
-            else{
-              console.log("Um player está fora, precisamos reiniciar a room");
-              io.in(this.roomID).emit("removePlayer","")
-            }
-  
-  
-  
-          }
-        }
-      }, 1000);
-    }
+
   
     CountTimeToEndGame(time:number){
       this.timer = time*1;

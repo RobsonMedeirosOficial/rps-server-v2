@@ -129,8 +129,8 @@ export default class Room {
 
                   // vamos para proxima etapa, embaralhar
                   setTimeout(()=>{
-                    // io.in(this.roomID).emit("scramble",winner)
-                    // this.CountTimeToScramble()
+                    io.in(this.roomID).emit("scramble",winner)
+                    this.CountTimeToScramble()
     
                   },2)
 

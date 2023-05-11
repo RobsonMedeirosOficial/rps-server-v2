@@ -470,7 +470,11 @@ export default class Room {
       console.log(`\n<<<<<<<<<<<<<<<<<<<<<<<<<<< endGame`);
       console.log(d);
       io.in(this.roomID).emit("endGame",d)
-      
+
+      // Vamos resetar os rps dos players
+      this.playerList.forEach(p => {
+        p.rps=-1;
+      });
     }
 
 

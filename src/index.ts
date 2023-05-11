@@ -75,8 +75,21 @@ io.on('connection', async(socket:any) => {
             console.log(`PLAYER:${room.playerList[1].playerID} VENCEU!!`);
           }else{
             console.log("DRAWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
-            
-          }        }
+            if(room.gameDraws>1){
+              console.log(`LIMITE DE DRAWWWWWWW`);
+              
+            }else{
+              room.playerList.forEach(p=>{
+                p.rps=-1
+              })
+              io.in(room.roomID).emit("gameDraw")
+              io.in(room.roomID).emit("setTimer","10")
+              room.SelectionTimer(10)
+              room.gameDraws++
+            }
+          }        
+        }
+
         if(data.countPaper>=60){
           console.log(`PAPER: ${data.countPaper} VENCEU!!`);
           if(room.playerList[0].rps===1)
@@ -88,8 +101,21 @@ io.on('connection', async(socket:any) => {
             console.log(`PLAYER:${room.playerList[1].playerID} VENCEU!!`);
           }else{
             console.log("DRAWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
-            
-          }        }
+            if(room.gameDraws>1){
+              console.log(`LIMITE DE DRAWWWWWWW`);
+              
+            }else{
+              room.playerList.forEach(p=>{
+                p.rps=-1
+              })
+              io.in(room.roomID).emit("gameDraw")
+              io.in(room.roomID).emit("setTimer","10")
+              room.SelectionTimer(10)
+              room.gameDraws++
+            }
+          }        
+        }
+
         if(data.countScissor>=60){
           console.log(`SCISSORS: ${data.countScissor} VENCEU!!`);
           if(room.playerList[0].rps===2)
@@ -101,7 +127,18 @@ io.on('connection', async(socket:any) => {
             console.log(`PLAYER:${room.playerList[1].playerID} VENCEU!!`);
           }else{
             console.log("DRAWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
-            
+            if(room.gameDraws>1){
+              console.log(`LIMITE DE DRAWWWWWWW`);
+              
+            }else{
+              room.playerList.forEach(p=>{
+                p.rps=-1
+              })
+              io.in(room.roomID).emit("gameDraw")
+              io.in(room.roomID).emit("setTimer","10")
+              room.SelectionTimer(10)
+              room.gameDraws++
+            }
           }
         }
 

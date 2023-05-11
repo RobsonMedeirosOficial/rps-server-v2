@@ -57,15 +57,18 @@ io.on('connection', async(socket:any) => {
     
     let room = wsc.getRoomByRoomID(data.roomID)
     if(room){
+      
       room.SetPoints(data)
         console.log("\n================================================ sendPoints");
         io.in(room.roomID).emit("current_points",data)
 
+        if(!room.isGameRunning) return
         console.log(`ROCK: ${data.countRock}`);
         console.log(`PAPER: ${data.countPaper}`);
         console.log(`SCISSORS: ${data.countScissor}`);
         
         if(data.countRock>=60){
+          room.isGameRunning=false
           console.log(`ROCK: ${data.countRock} VENCEU!!`);
           if(room.playerList[0].rps===0)
           {
@@ -88,6 +91,9 @@ io.on('connection', async(socket:any) => {
               })
               io.in(room.roomID).emit("gameDraw")
               io.in(room.roomID).emit("setTimer","10")
+              clearInterval(room.setInterval)
+              room.setInterval=undefined
+
               room.SelectionTimer(10)
               room.gameDraws++
             }
@@ -95,6 +101,8 @@ io.on('connection', async(socket:any) => {
         }
 
         if(data.countPaper>=60){
+          room.isGameRunning=false
+
           console.log(`PAPER: ${data.countPaper} VENCEU!!`);
           if(room.playerList[0].rps===1)
           {
@@ -118,6 +126,9 @@ io.on('connection', async(socket:any) => {
               })
               io.in(room.roomID).emit("gameDraw")
               io.in(room.roomID).emit("setTimer","10")
+              clearInterval(room.setInterval)
+              room.setInterval=undefined
+
               room.SelectionTimer(10)
               room.gameDraws++
             }
@@ -125,6 +136,8 @@ io.on('connection', async(socket:any) => {
         }
 
         if(data.countScissor>=60){
+          room.isGameRunning=false
+
           console.log(`SCISSORS: ${data.countScissor} VENCEU!!`);
           if(room.playerList[0].rps===2)
           {
@@ -149,8 +162,11 @@ io.on('connection', async(socket:any) => {
               room.StopTimer()
               io.in(room.roomID).emit("gameDraw")
               io.in(room.roomID).emit("setTimer","10")
+              clearInterval(room.setInterval)
+              room.setInterval=undefined
               room.SelectionTimer(10)
               room.gameDraws++
+              
             }
           }
         }

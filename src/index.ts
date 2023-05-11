@@ -58,10 +58,13 @@ io.on('connection', async(socket:any) => {
 
       io.in(data.roomID).emit("current_points",data)
       let room = wsc.getRoomByRoomID(data.roomID)
+console.log(`ROOOOOOOOOMMMMMMMMMMMMMMM`);
+console.log(`IS RUNNING: ${room?.isGameRunning}`);
 
-        if(room && room.isGameRunning){
 
-          if( data.countRock>=60 || data.countPaper>=60 || data.countScissor>=60)
+        if(room && room?.isGameRunning){
+
+          if( data.countRock>=1 || data.countPaper>=1 || data.countScissor>=1)
           {
             console.log(`A PARTIDA ACABOU!!!!!!!!!!!!!!!!!!!!!!!!!`);
             let rpsList=[{rps:0,rpsAmount:0},{rps:1,rpsAmount:0},{rps:2,rpsAmount:0}]

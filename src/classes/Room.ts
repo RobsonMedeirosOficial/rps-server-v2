@@ -342,7 +342,7 @@ export default class Room {
           }
         }else{
           // Aqui vamos aplicar a vitória no final da partida
-          this.SendEndGame()
+          // this.SendEndGame()
           // this.StopTimer()
         }
       }else{

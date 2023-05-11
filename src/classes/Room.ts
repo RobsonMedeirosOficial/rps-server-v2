@@ -55,9 +55,17 @@ export default class Room {
               // this.CheckSelectionAndRondom()
               if(this.playerList[0].rps===-1 || this.playerList[1].rps===-1){
                 let listRandom = [0, 1, 2];
+
+                this.playerList.forEach(p => {
+                  if(p.rps!=-1){
+                    listRandom = listRandom.filter(i=>i!=p.rps)
+                  }
+                });
+
                 let rps = 0
                 this.playerList.forEach(player=>{
                   if(player.rps===-1){
+
                     rps = Math.floor(Math.random() * listRandom.length);
                     player.rps=rps
                     console.log(`O player(${player.playerID}) selecionou o rps(${player.rps}) randomicamente.`);
@@ -66,6 +74,21 @@ export default class Room {
                   }
                 })
               }
+
+              // if(this.playerList[0].rps===-1 || this.playerList[1].rps===-1){
+              //   let listRandom = [0, 1, 2];
+              //   let rps = 0
+              //   this.playerList.forEach(player=>{
+              //     if(player.rps===-1){
+
+              //       rps = Math.floor(Math.random() * listRandom.length);
+              //       player.rps=rps
+              //       console.log(`O player(${player.playerID}) selecionou o rps(${player.rps}) randomicamente.`);
+                    
+              //       player.socket.emit("player_random_rps",""+player.rps)
+              //     }
+              //   })
+              // }
 
 
               console.log(`\nQual o resultado do pre-game???`);

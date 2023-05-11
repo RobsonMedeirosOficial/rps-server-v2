@@ -297,6 +297,7 @@ export default class Room {
           console.log(rpsList[0]);
           // REVIEW
           if(rpsList[0].rpsAmount>=60){
+            this.StopTimer()
             console.log(`ALGUÚEM CHEGOU A 60: rps(${rpsList[0].rps})amount(${rpsList[0].rpsAmount})`);
             
             if(this.playerList[0].rpsAmount != this.playerList[1].rpsAmount){
@@ -326,7 +327,6 @@ export default class Room {
 
             }
             
-      
             if(this.playerList[0].rps!=rpsList[0].rps && this.playerList[1].rps!=rpsList[0].rps){
               // Não houve vencedor
               // Empate de zero 
@@ -348,7 +348,7 @@ export default class Room {
                 this.SelectionTimer(10)
               }
             }
-            this.StopTimer()
+            
           }
         }else{
           // Aqui vamos aplicar a vitória no final da partida

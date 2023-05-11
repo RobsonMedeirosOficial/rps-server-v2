@@ -341,7 +341,11 @@ export default class Room {
                 this.gameDraws++
                 io.in(this.roomID).emit("gameDraw",""+this.gameDraws)
                 console.log(`Enviando gameDraw(${this.gameDraws}) para todos da room(${this.roomID})`);
-                
+                // Vamos resetar os rps dos players
+                this.playerList.forEach(p => {
+                  p.rps=-1;
+                });
+                this.SelectionTimer(10)
               }
             }
             this.StopTimer()

@@ -15,6 +15,7 @@ export default class Room {
     roomUpdateInterval:any;
     preGameDraws:number;
     gameDraws:number;
+    isGameRunning:boolean
     constructor(id: string = "") {
       this.roomID = id;
       this.playerList = [];
@@ -22,6 +23,7 @@ export default class Room {
       this.timer = 0; // removi a tipagem 'any' e atribui um valor inicial
       this.timerMax = 5;
       this.preGameDraws=0;
+      this.isGameRunning=false
       this.gameDraws=0;
       this.rpsList=[new RPS("Rock",0),new RPS("Paper",1),new RPS("Scissor",2)]
     }
@@ -29,6 +31,7 @@ export default class Room {
 
     SelectionTimer(timerMax: number){
       // Contagem de tempo limite
+      
       this.timer = timerMax * 1;
       this.setInterval = setInterval(() => {
         if(this.timer > 0){
@@ -193,6 +196,7 @@ export default class Room {
               console.log(`\nQue vença o melhor!!!`);
   
                 io.in(this.roomID).emit("startGame","")
+                this.isGameRunning=true
                 this.CountTimeToEndGame(5)
               }
             else{

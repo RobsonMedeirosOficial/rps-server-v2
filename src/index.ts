@@ -52,7 +52,7 @@ io.on('connection', async(socket:any) => {
       io.in(data.roomID).emit("endGame","")
   });
   socket.on('sendPoints', async(data:any) => {
-    
+
       console.log("================================================ sendPoints");
       // console.log(data);
 
@@ -64,7 +64,44 @@ io.on('connection', async(socket:any) => {
           if( data.countRock>=60 || data.countPaper>=60 || data.countScissor>=60)
           {
             console.log(`A PARTIDA ACABOU!!!!!!!!!!!!!!!!!!!!!!!!!`);
-            room.CheckWinner(data)
+            let rpsList=[{rps:0,rpsAmount:0},{rps:1,rpsAmount:0},{rps:2,rpsAmount:0}]
+            // Lista de rps com o rps e rpsAmount de cada peça
+            rpsList[0].rpsAmount=data.countRock
+            rpsList[1].rpsAmount=data.countPaper
+            rpsList[2].rpsAmount=data.countScissor
+            rpsList = rpsList.sort((a,b)=>b.rpsAmount - a.rpsAmount)
+
+            let playerWinner: any = undefined
+
+            room.playerList.forEach((p:any)=>{
+              if(p && p.rps===rpsList[0].rps){
+                playerWinner=p
+              }
+            })
+            console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+            console.log(playerWinner);
+            
+            if(playerWinner){
+              // Temos um vencedor
+              console.log(`\nVITÓRIA *************************************************************`);
+              console.log(`O player(${playerWinner.playerID}) venceu | points: ${playerWinner.rpsAmount}`);
+            
+            }else{
+              // Temos um empate
+
+              room.gameDraws++
+              io.in(room.roomID).emit("gameDraw",""+room.gameDraws)
+              console.log(`Enviando gameDraw(${room.gameDraws}) para todos da room(${room.roomID})`);
+              // Vamos resetar os rps dos players
+              room.playerList.forEach(p => {
+                p.rps=-1;
+              });
+              room.SelectionTimer(10)
+
+            }
+
+
+            // room.CheckWinner(data)
           }
           // room.CheckWinner(data)
           room.isGameRunning=false
@@ -81,7 +118,7 @@ io.on('connection', async(socket:any) => {
       // let player = wsc.getPlayerBySocket(socket)
 
       // if(player){
-        
+
       //   player.isReady=data.isBool
       //   let room = wsc.getRoomByRoomID(player.roomID)
 
@@ -89,13 +126,13 @@ io.on('connection', async(socket:any) => {
 
       //     let isAllReady = true;
       //     room.playerList.forEach((p:any)=>{
-      //       if(!p.isReady) 
+      //       if(!p.isReady)
       //       {
       //         isAllReady=false
       //         return
       //       }
       //     })
-          
+
       //     if(isAllReady && room.playerList.length>1){
       //       console.log(`\nOs players responderam que estão prontos para jogar!`);
       //       console.log(`Tempo para selecionar uma peça começa agora: `);
@@ -135,7 +172,7 @@ io.on('connection', async(socket:any) => {
   socket.on('disconnect', () => {
 
     console.log("\n================================================= disconnect");
-    
+
     let player = wsc.players.find((p:any)=>p.socket===socket)
 
     if(player){
@@ -144,7 +181,7 @@ io.on('connection', async(socket:any) => {
       if(room){
         console.log(`O player(${player.playerID}) foi removido da room(${room.roomID})`);
         room.playerList=room.playerList.filter((p:any)=>p.socket!==socket)
-        
+
         io.in(room.roomID).emit("removePlayer")
 
         if(room.playerList.length<=0){

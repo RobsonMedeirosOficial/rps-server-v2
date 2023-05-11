@@ -308,21 +308,24 @@ export default class Room {
       
             }else{
               // Houve empate 
-              console.log(`\EMPATE *************************************************************`);
-              console.log(`O player(${this.playerList[0].playerID}) empatou | points: ${this.playerList[0].rpsAmount}`);
-              console.log(`O player(${this.playerList[1].playerID}) empatou | points: ${this.playerList[1].rpsAmount}`);
-              if(this.gameDraws>1){
-                this.SendEndGame()
-                console.log(`gameDraw(${this.gameDraws}) room(${this.roomID}) | LIMITE DE EMPATE: ${this.gameDraws}`);
-                this.gameDraws=0
-              }else{
-                this.gameDraws++
-                io.in(this.roomID).emit("gameDraw",""+this.gameDraws)
-                console.log(`Enviando gameDraw(${this.gameDraws}) para todos da room(${this.roomID})`);
-                
-              }
+
+
+              
+              // console.log(`\EMPATE *************************************************************`);
+              // console.log(`O player(${this.playerList[0].playerID}) empatou | points: ${this.playerList[0].rpsAmount}`);
+              // console.log(`O player(${this.playerList[1].playerID}) empatou | points: ${this.playerList[1].rpsAmount}`);
+              // if(this.gameDraws>1){
+              //   this.SendEndGame()
+              //   console.log(`gameDraw(${this.gameDraws}) room(${this.roomID}) | LIMITE DE EMPATE: ${this.gameDraws}`);
+              //   this.gameDraws=0
+              // }else{
+              //   this.gameDraws++
+              //   io.in(this.roomID).emit("gameDraw",""+this.gameDraws)
+              //   console.log(`Enviando gameDraw(${this.gameDraws}) para todos da room(${this.roomID})`);
+              // }
 
             }
+            
       
             if(this.playerList[0].rps!=rpsList[0].rps && this.playerList[1].rps!=rpsList[0].rps){
               // Não houve vencedor
@@ -470,12 +473,6 @@ export default class Room {
       console.log(`\n<<<<<<<<<<<<<<<<<<<<<<<<<<< endGame`);
       console.log(d);
       io.in(this.roomID).emit("endGame",d)
-
-      // Vamos resetar os rps dos players
-      this.playerList.forEach(p => {
-        p.rps=-1;
-      });
-      this.SelectionTimer(10)
     }
 
 

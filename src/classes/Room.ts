@@ -53,21 +53,22 @@ export default class Room {
               let listRandom = [0, 1, 2];
               console.log(`O listRandom(${listRandom}).`)
               this.playerList.forEach(p => {
-                if(p.rps!=-1){
-                  listRandom = listRandom.filter(i=>i!=p.rps)
+                if(p.rps!==-1){
+                  listRandom = listRandom.filter(i=>i!==p.rps)
                 }
               });
+              console.log(`O listRandom(${listRandom}) atualizada.`)
 
               this.playerList.forEach(p=>{
-                if(p.rps=-1){
+                if(p.rps===-1){
                   p.rps = Math.floor(Math.random() * listRandom.length)
-                  listRandom = listRandom.filter(i=>i!=p.rps)
+                  listRandom = listRandom.filter(i=>i!==p.rps)
                   p.socket.emit("player_random_rps",""+p.rps)
                   console.log(`O player(${p.playerID}) selecionou o rps(${p.rps}) randomicamente.`)
                 }
               })
 
-              console.log(`O listRandom(${listRandom}) atualizada.`)
+              console.log(`O listRandom(${listRandom}) atualizada.2`)
 
 
               // vamos verificar quem não selecionou a peça e selecionar 
@@ -139,7 +140,8 @@ export default class Room {
               
               // no caso empate por 3 vezes o randon resultará
               // num desempate
-              if(this.preGameDraws>1){
+              if(this.preGameDraws>1)
+              {
 
                 console.log("\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
                 
@@ -151,7 +153,7 @@ export default class Room {
                     this.playerList[0].rps=rps
                     console.log(`O player(${this.playerList[0].playerID}) selecionou o rps(${this.playerList[0].rps}) randomicamente.`);
                     console.log(`E...`);
-                    listRandom = listRandom.filter(i=>i!=rps)
+                    listRandom = listRandom.filter(i=>i!==rps)
                     rps = Math.floor(Math.random() * listRandom.length);
                     this.playerList[1].rps=rps
                     console.log(`O player(${this.playerList[1].playerID}) selecionou o rps(${this.playerList[1].rps}) randomicamente.`);

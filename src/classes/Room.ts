@@ -197,7 +197,7 @@ export default class Room {
   
                 io.in(this.roomID).emit("startGame","")
                 this.isGameRunning=true
-                this.CountTimeToEndGame(5)
+                this.CountTimeToEndGame(60*5)
               }
             else{
               console.log("Um player está fora, precisamos reiniciar a room");

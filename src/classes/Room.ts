@@ -261,6 +261,8 @@ export default class Room {
     CheckWinner(data:any){
   
       if(this.CheckPlayersInRoom()){
+        console.log(`CheckWinner ROMTIMER: ${this.timer}`);
+        
         let rpsList=[{rps:0,rpsAmount:0},{rps:1,rpsAmount:0},{rps:2,rpsAmount:0}]
         // Lista de rps com o rps e rpsAmount de cada peça
         rpsList[0].rpsAmount=data.countRock

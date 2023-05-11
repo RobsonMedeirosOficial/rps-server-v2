@@ -290,12 +290,15 @@ export default class Room {
         this.playerList = this.playerList.sort((a,b)=>b.rpsAmount - a.rpsAmount)
     
         // Vamos verificar se a partida está rodando e aplicar vitória por ponto
-        if(this.timer>0){
+        // if(this.timer>0){
+        if(true){
           // Houve um vencedor por pontos maximo
           
           console.log(rpsList[0]);
           // REVIEW
           if(rpsList[0].rpsAmount>=60){
+            console.log(`ALGUÚEM CHEGOU A 60: rps(${rpsList[0].rps})amount(${rpsList[0].rpsAmount})`);
+            
             if(this.playerList[0].rpsAmount != this.playerList[1].rpsAmount){
               // Houve um vencedor
               console.log(`\nVITÓRIA *************************************************************`);
@@ -311,7 +314,7 @@ export default class Room {
               if(this.gameDraws>1){
                 this.SendEndGame()
                 console.log(`gameDraw(${this.gameDraws}) room(${this.roomID}) | LIMITE DE EMPATE: ${this.gameDraws}`);
-
+                this.gameDraws=0
               }else{
                 this.gameDraws++
                 io.in(this.roomID).emit("gameDraw",""+this.gameDraws)
@@ -342,7 +345,7 @@ export default class Room {
           }
         }else{
           // Aqui vamos aplicar a vitória no final da partida
-          // this.SendEndGame()
+          this.SendEndGame()
           // this.StopTimer()
         }
       }else{

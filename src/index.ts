@@ -69,32 +69,39 @@ io.on('connection', async(socket:any) => {
           if(room.playerList[0].rps===0)
           {
             console.log(`PLAYER:${room.playerList[0].playerID} VENCEU!!`);
-          }
+          }else
           if(room.playerList[1].rps===0)
           {
             console.log(`PLAYER:${room.playerList[1].playerID} VENCEU!!`);
-          }
-        }
+          }else{
+            console.log("DRAWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
+            
+          }        }
         if(data.countPaper>=60){
           console.log(`PAPER: ${data.countPaper} VENCEU!!`);
           if(room.playerList[0].rps===1)
           {
             console.log(`PLAYER:${room.playerList[0].playerID} VENCEU!!`);
-          }
+          }else
           if(room.playerList[1].rps===1)
           {
             console.log(`PLAYER:${room.playerList[1].playerID} VENCEU!!`);
-          }
-        }
+          }else{
+            console.log("DRAWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
+            
+          }        }
         if(data.countScissor>=60){
           console.log(`SCISSORS: ${data.countScissor} VENCEU!!`);
           if(room.playerList[0].rps===2)
           {
             console.log(`PLAYER:${room.playerList[0].playerID} VENCEU!!`);
-          }
+          }else
           if(room.playerList[1].rps===2)
           {
             console.log(`PLAYER:${room.playerList[1].playerID} VENCEU!!`);
+          }else{
+            console.log("DRAWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
+            
           }
         }
 

@@ -114,7 +114,7 @@ export default class Room {
                     this.playerList.forEach(p=>{
                       p.rps=-1
                     })
-                  },3000)
+                  },2000)
                 }else{
                   // houve um vencedor.
 

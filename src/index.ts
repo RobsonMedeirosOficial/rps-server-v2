@@ -57,6 +57,7 @@ io.on('connection', async(socket:any) => {
     
     let room = wsc.getRoomByRoomID(data.roomID)
     if(room){
+      room.SetPoints(data)
         console.log("\n================================================ sendPoints");
         io.in(room.roomID).emit("current_points",data)
 
@@ -69,10 +70,13 @@ io.on('connection', async(socket:any) => {
           if(room.playerList[0].rps===0)
           {
             console.log(`PLAYER:${room.playerList[0].playerID} VENCEU!!`);
+            room.SendEndGame()
           }else
           if(room.playerList[1].rps===0)
           {
             console.log(`PLAYER:${room.playerList[1].playerID} VENCEU!!`);
+            room.SendEndGame()
+
           }else{
             console.log("DRAWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
             if(room.gameDraws>1){
@@ -95,10 +99,14 @@ io.on('connection', async(socket:any) => {
           if(room.playerList[0].rps===1)
           {
             console.log(`PLAYER:${room.playerList[0].playerID} VENCEU!!`);
+            room.SendEndGame()
+
           }else
           if(room.playerList[1].rps===1)
           {
             console.log(`PLAYER:${room.playerList[1].playerID} VENCEU!!`);
+            room.SendEndGame()
+
           }else{
             console.log("DRAWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
             if(room.gameDraws>1){
@@ -121,10 +129,14 @@ io.on('connection', async(socket:any) => {
           if(room.playerList[0].rps===2)
           {
             console.log(`PLAYER:${room.playerList[0].playerID} VENCEU!!`);
+            room.SendEndGame()
+
           }else
           if(room.playerList[1].rps===2)
           {
             console.log(`PLAYER:${room.playerList[1].playerID} VENCEU!!`);
+            room.SendEndGame()
+
           }else{
             console.log("DRAWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
             if(room.gameDraws>1){

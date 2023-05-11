@@ -56,11 +56,18 @@ io.on('connection', async(socket:any) => {
       // console.log(data);
 
       io.in(data.roomID).emit("current_points",data)
-      let room = wsc.getRoomByRoomID(data.roomID)
 
-        if(room){
-          room.CheckWinner(data)
-      }
+
+      if(data.countRock>=60 || data.countPaper>=60 || data.countScissor>=60)
+{
+  console.log(`A PARTIDA ACABOU!!!!!!!!!!!!!!!!!!!!!!!!!`);
+  
+}
+      // let room = wsc.getRoomByRoomID(data.roomID)
+
+      //   if(room){
+      //     room.CheckWinner(data)
+      // }
   });
 
   socket.on('setReady', async(data:any) => {

@@ -190,7 +190,7 @@ export default class Room {
               console.log(`\nQue vença o melhor!!!`);
   
                 io.in(this.roomID).emit("startGame","")
-                this.CountTimeToEndGame(60*5)
+                this.CountTimeToEndGame(5)
               }
             else{
               console.log("Um player está fora, precisamos reiniciar a room");
@@ -337,8 +337,6 @@ export default class Room {
       }, 1000);
     }
   
-
-  
     CountTimeToEndGame(time:number){
       this.timer = time*1;
       
@@ -355,6 +353,140 @@ export default class Room {
         }
       }, 1000);
     }
+
+    CheckWinner(data:any){
+  
+      if(this.CheckPlayersInRoom()){
+        let rpsList=[{rps:0,rpsAmount:0},{rps:1,rpsAmount:0},{rps:2,rpsAmount:0}]
+        // Lista de rps com o rps e rpsAmount de cada peça
+        rpsList[0].rpsAmount=data.countRock
+        rpsList[1].rpsAmount=data.countPaper
+        rpsList[2].rpsAmount=data.countScissor
+    
+        // Organiza a rpsList do maior para o menor
+        rpsList = rpsList.sort((a,b)=>b.rpsAmount - a.rpsAmount)
+        // Selecionamos o rps de maior valor e colocamos em rpsWinner
+        let rpsWinner = rpsList[0]
+    
+        // Vamos distribuir os pontos de cada player de acordo com seu rps
+        for (let pIndex = 0; pIndex < this.playerList.length; pIndex++) {
+    
+          if(this.playerList[pIndex].rps==0){
+            this.playerList[pIndex].rpsAmount=data.countRock
+          }
+          if(this.playerList[pIndex].rps==1){
+            this.playerList[pIndex].rpsAmount=data.countPaper
+          }
+          if(this.playerList[pIndex].rps==2){
+            this.playerList[pIndex].rpsAmount=data.countScissor
+          }
+        }
+    
+        // Agora vamos organizar a playerList da room do maior para o menor em rpsAmount
+        this.playerList = this.playerList.sort((a,b)=>b.rpsAmount - a.rpsAmount)
+    
+        // Vamos verificar se a partida está rodando e aplicar vitória por ponto
+        if(this.timer>0){
+          // Houve um vencedor por pontos maximo
+          
+          console.log(rpsList[0]);
+          // REVIEW
+          if(rpsList[0].rpsAmount>=60){
+            if(this.playerList[0].rpsAmount != this.playerList[1].rpsAmount){
+              // Houve um vencedor
+              console.log(`\nVITÓRIA *************************************************************`);
+              console.log(`O player(${this.playerList[0].playerID}) venceu | points: ${this.playerList[0].rpsAmount}`);
+              console.log(`O player(${this.playerList[1].playerID}) perdeu | points: ${this.playerList[1].rpsAmount}`);
+              this.SendEndGame()
+      
+            }else{
+              // Houve empate 
+              console.log(`\EMPATE *************************************************************`);
+              console.log(`O player(${this.playerList[0].playerID}) empatou | points: ${this.playerList[0].rpsAmount}`);
+              console.log(`O player(${this.playerList[1].playerID}) empatou | points: ${this.playerList[1].rpsAmount}`);
+              this.SendEndGame()
+            }
+      
+            if(this.playerList[0].rps!=rpsList[0].rps && this.playerList[1].rps!=rpsList[0].rps){
+              // Não houve vencedor
+              // Empate de zero 
+              console.log(`\EMPATE ZERO A ZERO *************************************************************`);
+              console.log(`O player(${this.playerList[0].playerID}) empatou | points: ${this.playerList[0].rpsAmount}`);
+              console.log(`O player(${this.playerList[1].playerID}) empatou | points: ${this.playerList[1].rpsAmount}`);
+              this.SendEndGame()
+            }
+            this.StopTimer()
+          }
+        }else{
+          // Aqui vamos aplicar a vitória no final da partida
+          this.SendEndGame()
+          // this.StopTimer()
+        }
+      }else{
+        console.log(`Um player saiu da partida, precisamos finaliza-la`);
+        io.in(this.roomID).emit("removePlayer","")
+        this.StopTimer()
+      }
+    }
+
+    SendEndGame(isEndGame=false){
+      let playerList:any[]=[]
+      this.playerList.forEach(p => {
+        playerList.push(
+          {
+            playerID:p.playerID,
+            roomID:p.roomID,
+            rps:p.rps,
+            rpsAmount:p.rpsAmount
+          }
+        )
+      });
+      let d: any={
+        playerList:playerList,
+      }
+  
+      console.log(`\n<<<<<<<<<<<<<<<<<<<<<<<<<<< endGame`);
+      console.log(d);
+      io.in(this.roomID).emit("endGame",d)
+      
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // SendGetWinner(){
   
@@ -430,110 +562,9 @@ export default class Room {
       }
     }
   
-    SendEndGame(isEndGame=false){
-      let playerList:any[]=[]
-      this.playerList.forEach(p => {
-        playerList.push(
-          {
-            playerID:p.playerID,
-            roomID:p.roomID,
-            rps:p.rps,
-            rpsAmount:p.rpsAmount
-          }
-        )
-      });
-      let d: any={
-        playerList:playerList,
-      }
+
   
-      console.log(`\n<<<<<<<<<<<<<<<<<<<<<<<<<<< endGame`);
-      console.log(d);
-      io.in(this.roomID).emit("endGame",d)
-      
-    }
-  
-    CheckWinner(data:any){
-  
-      if(this.CheckPlayersInRoom()){
-        let rpsList=[{rps:0,rpsAmount:0},{rps:1,rpsAmount:0},{rps:2,rpsAmount:0}]
-        // Lista de rps com o rps e rpsAmount de cada peça
-        rpsList[0].rpsAmount=data.countRock
-        rpsList[1].rpsAmount=data.countPaper
-        rpsList[2].rpsAmount=data.countScissor
     
-        // Organiza a rpsList do maior para o menor
-        rpsList = rpsList.sort((a,b)=>b.rpsAmount - a.rpsAmount)
-        // Selecionamos o rps de maior valor e colocamos em rpsWinner
-        let rpsWinner = rpsList[0]
-    
-        // Vamos distribuir os pontos de cada player de acordo com seu rps
-        for (let pIndex = 0; pIndex < this.playerList.length; pIndex++) {
-    
-          if(this.playerList[pIndex].rps==0){
-            this.playerList[pIndex].rpsAmount=data.countRock
-          }
-          if(this.playerList[pIndex].rps==1){
-            this.playerList[pIndex].rpsAmount=data.countPaper
-          }
-          if(this.playerList[pIndex].rps==2){
-            this.playerList[pIndex].rpsAmount=data.countScissor
-          }
-        }
-    
-        // Agora vamos organizar a playerList da room do maior para o menor em rpsAmount
-        this.playerList = this.playerList.sort((a,b)=>b.rpsAmount - a.rpsAmount)
-    
-        // Vamos verificar se a partida está rodando e aplicar vitória por ponto
-        if(this.timer>0){
-          // Houve um vencedor por pontos maximo
-          
-          console.log(rpsList[0]);
-          // REVIEW
-          if(rpsList[0].rpsAmount>=60){
-            if(this.playerList[0].rpsAmount != this.playerList[1].rpsAmount){
-              // Houve um vencedor
-              console.log(`\nVITÓRIA *************************************************************`);
-              console.log(`O player(${this.playerList[0].playerID}) venceu | points: ${this.playerList[0].rpsAmount}`);
-              console.log(`O player(${this.playerList[1].playerID}) perdeu | points: ${this.playerList[1].rpsAmount}`);
-              this.SendEndGame()
-      
-            }else{
-              // Houve empate 
-              console.log(`\EMPATE *************************************************************`);
-              console.log(`O player(${this.playerList[0].playerID}) empatou | points: ${this.playerList[0].rpsAmount}`);
-              console.log(`O player(${this.playerList[1].playerID}) empatou | points: ${this.playerList[1].rpsAmount}`);
-              this.SendEndGame()
-            }
-      
-            if(this.playerList[0].rps!=rpsList[0].rps && this.playerList[1].rps!=rpsList[0].rps){
-              // Não houve vencedor
-              // Empate de zero 
-              console.log(`\EMPATE ZERO A ZERO *************************************************************`);
-              console.log(`O player(${this.playerList[0].playerID}) empatou | points: ${this.playerList[0].rpsAmount}`);
-              console.log(`O player(${this.playerList[1].playerID}) empatou | points: ${this.playerList[1].rpsAmount}`);
-              this.SendEndGame()
-            }
-    
-            this.StopTimer()
-    
-          }
-    
-    
-        }else{
-          // Aqui vamos aplicar a vitória no final da partida
-          this.SendEndGame()
-          // this.StopTimer()
-        }
-  
-      }else{
-        console.log(`Um player saiu da partida, precisamos finaliza-la`);
-        io.in(this.roomID).emit("removePlayer","")
-        this.StopTimer()
-      }
-  
-  
-            
-    }
   
     RemovePlayer(socket:Socket) {
       const player: Player | undefined = wsc.getPlayerBySocket(socket);

@@ -50,30 +50,74 @@ export default class Room {
               // precisamos destruir o contador
               this.StopTimer()
 
+              let listRandom = [0, 1, 2];
+              console.log(`O listRandom(${listRandom}).`)
+              this.playerList.forEach(p => {
+                if(p.rps!=-1){
+                  listRandom = listRandom.filter(i=>i!=p.rps)
+                }
+              });
+
+              this.playerList.forEach(p=>{
+                if(p.rps=-1){
+                  p.rps = Math.floor(Math.random() * listRandom.length)
+                  listRandom = listRandom.filter(i=>i!=p.rps)
+                  p.socket.emit("player_random_rps",""+p.rps)
+                  console.log(`O player(${p.playerID}) selecionou o rps(${p.rps}) randomicamente.`)
+                }
+              })
+
+              console.log(`O listRandom(${listRandom}) atualizada.`)
+
+
               // vamos verificar quem não selecionou a peça e selecionar 
               // randomicamente
               // this.CheckSelectionAndRondom()
-              if(this.playerList[0].rps===-1 || this.playerList[1].rps===-1){
-                let listRandom = [0, 1, 2];
+              // if(this.playerList[0].rps===-1 || this.playerList[1].rps===-1){
+              //   let listRandom = [0, 1, 2];
 
-                this.playerList.forEach(p => {
-                  if(p.rps!=-1){
-                    listRandom = listRandom.filter(i=>i!=p.rps)
-                  }
-                });
+              //   this.playerList.forEach(p => {
+              //     if(p.rps!=-1){
+              //       listRandom = listRandom.filter(i=>i!=p.rps)
+              //     }
+              //   });
 
-                let rps = 0
-                this.playerList.forEach(player=>{
-                  if(player.rps===-1){
+              //   let rps = 0
+              //   this.playerList.forEach(player=>{
+              //     if(player.rps===-1){
 
-                    rps = Math.floor(Math.random() * listRandom.length);
-                    player.rps=rps
-                    console.log(`O player(${player.playerID}) selecionou o rps(${player.rps}) randomicamente.`);
+              //       rps = Math.floor(Math.random() * listRandom.length);
+              //       player.rps=rps
+              //       console.log(`O player(${player.playerID}) selecionou o rps(${player.rps}) randomicamente.`);
                     
-                    player.socket.emit("player_random_rps",""+player.rps)
-                  }
-                })
-              }
+              //       player.socket.emit("player_random_rps",""+player.rps)
+              //     }
+              //   })
+              // }
+
+
+              // if(this.playerList[0].rps === this.playerList[1].rps){
+                
+
+              //   this.playerList.forEach(p => {
+              //     if(p.rps!=-1){
+              //       listRandom = listRandom.filter(i=>i!=p.rps)
+              //     }
+              //   });
+
+              //   let rps = 0
+              //   this.playerList.forEach(player=>{
+              //     if(player.rps===-1){
+
+              //       rps = Math.floor(Math.random() * listRandom.length);
+              //       player.rps=rps
+              //       console.log(`O player(${player.playerID}) selecionou o rps(${player.rps}) randomicamente.`);
+                    
+              //       player.socket.emit("player_random_rps",""+player.rps)
+              //     }
+              //   })
+              // }
+
 
               // if(this.playerList[0].rps===-1 || this.playerList[1].rps===-1){
               //   let listRandom = [0, 1, 2];
@@ -96,6 +140,11 @@ export default class Room {
               // no caso empate por 3 vezes o randon resultará
               // num desempate
               if(this.preGameDraws>1){
+
+                console.log("\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+                
+                    console.log(`\n this.preGameDraws>1 : ${this.gameDraws}`);
+
 
                     let listRandom = [0, 1, 2];
                     let rps = Math.floor(Math.random() * listRandom.length);

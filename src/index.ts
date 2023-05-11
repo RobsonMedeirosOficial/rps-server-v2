@@ -64,7 +64,7 @@ console.log(`IS RUNNING: ${room?.isGameRunning}`);
 
         if(room && room?.isGameRunning){
 
-          if( data.countRock>=1 || data.countPaper>=1 || data.countScissor>=1)
+          if( data.countRock>=10 || data.countPaper>=10 || data.countScissor>=10)
           {
             console.log(`A PARTIDA ACABOU!!!!!!!!!!!!!!!!!!!!!!!!!`);
             let rpsList=[{rps:0,rpsAmount:0},{rps:1,rpsAmount:0},{rps:2,rpsAmount:0}]

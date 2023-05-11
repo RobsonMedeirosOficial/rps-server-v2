@@ -126,15 +126,13 @@ export default class Room {
 
                   // vamos resetar o preGameDraws
                   this.preGameDraws=0
-
+                  this.CountTimeWaitToScramble(5)
                   // vamos para proxima etapa, embaralhar
                   setTimeout(()=>{
                     io.in(this.roomID).emit("scramble",winner)
                     io.in(this.roomID).emit("setTimer","5")
-
-                    this.CountTimeToScramble(5)
     
-                  },3000)
+                  },5000)
 
                 }
 
@@ -146,6 +144,33 @@ export default class Room {
               }
           }else{
             // Não há 2 players na room, a partida deve ser encerrada!
+          }
+        }
+      }, 1000);
+    }
+
+
+    CountTimeWaitToScramble(timerMax:number){
+      this.timer = timerMax;;
+      this.setInterval = setInterval(() => {
+        if(this.timer > 0){
+          console.log(`Timer: ${this.timer}`);
+          this.timer--;
+          io.in(this.roomID).emit("timerRoom", this.timer.toString());
+          if(this.timer <= 0){
+            this.StopTimer()
+            if(this.CheckPlayersInRoom()){
+              console.log(`\nVamos esperar para embaralhar...`);
+              this.CountTimeToScramble(5)
+
+              }
+            else{
+              console.log("Um player está fora, precisamos reiniciar a room");
+              io.in(this.roomID).emit("removePlayer","")
+            }
+  
+  
+  
           }
         }
       }, 1000);

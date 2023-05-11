@@ -475,6 +475,7 @@ export default class Room {
       this.playerList.forEach(p => {
         p.rps=-1;
       });
+      this.SelectionTimer(10)
     }
 
 

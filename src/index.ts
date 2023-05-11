@@ -53,67 +53,28 @@ io.on('connection', async(socket:any) => {
   });
   socket.on('sendPoints', async(data:any) => {
 
-      console.log("================================================ sendPoints");
-      // console.log(data);
+    // console.log(data);
+    
+    let room = wsc.getRoomByRoomID(data.roomID)
+    if(room){
+        console.log("\n================================================ sendPoints");
+        io.in(room.roomID).emit("current_points",data)
 
-      io.in(data.roomID).emit("current_points",data)
-      let room = wsc.getRoomByRoomID(data.roomID)
-console.log(`ROOOOOOOOOMMMMMMMMMMMMMMM`);
-console.log(`IS RUNNING: ${room?.isGameRunning}`);
+        console.log(`ROCK: ${data.countRock}`);
+        console.log(`PAPER: ${data.countPaper}`);
+        console.log(`SCISSORS: ${data.countScissor}`);
+        
+        if(data.countRock>=60){
+          console.log(`ROCK: ${data.countRock} VENCEU!!`);
+        }
+        if(data.countPaper>=60){
+          console.log(`PAPER: ${data.countPaper} VENCEU!!`);
+        }
+        if(data.countScissor>=60){
+          console.log(`SCISSORS: ${data.countScissor} VENCEU!!`);
+        }
 
-
-        if(room && room?.isGameRunning){
-
-          if( data.countRock>=10 || data.countPaper>=10 || data.countScissor>=10)
-          {
-            console.log(`A PARTIDA ACABOU!!!!!!!!!!!!!!!!!!!!!!!!!`);
-            let rpsList=[{rps:0,rpsAmount:0},{rps:1,rpsAmount:0},{rps:2,rpsAmount:0}]
-            // Lista de rps com o rps e rpsAmount de cada peça
-            rpsList[0].rpsAmount=data.countRock
-            rpsList[1].rpsAmount=data.countPaper
-            rpsList[2].rpsAmount=data.countScissor
-            rpsList = rpsList.sort((a,b)=>b.rpsAmount - a.rpsAmount)
-
-            let playerWinner = false
-            let playerID =""
-            let amount =0
-            room.playerList.forEach((p:any)=>{
-              if(p && p.rps===rpsList[0].rps){
-                playerWinner=p
-                playerWinner = true
-                playerID=p.playerID
-                amount=p.rpsAmount
-              }
-            })
-            console.log(">>>>>>>>>>>>>>>>>>>>>>  playerWinner");
-            console.log(playerWinner);
-            
-            if(playerWinner){
-              // Temos um vencedor
-              console.log(`\nVITÓRIA *************************************************************`);
-              console.log(`O player(${playerWinner}) venceu | points: ${amount}`);
-              room.SendEndGame()
-            }else{
-              // Temos um empate
-
-              room.gameDraws++
-              io.in(room.roomID).emit("gameDraw",""+room.gameDraws)
-              console.log(`Enviando gameDraw(${room.gameDraws}) para todos da room(${room.roomID})`);
-              // Vamos resetar os rps dos players
-              room.playerList.forEach(p => {
-                p.rps=-1;
-              });
-              room.SelectionTimer(10)
-
-            }
-
-
-            // room.CheckWinner(data)
-          }
-          // room.CheckWinner(data)
-          room.isGameRunning=false
       }
-
 
 
   });

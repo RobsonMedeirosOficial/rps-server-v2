@@ -55,7 +55,7 @@ export default class Room {
               // this.CheckSelectionAndRondom()
               if(this.playerList[0].rps===-1 || this.playerList[1].rps===-1){
                 let listRandom = [0, 1, 2];
-                let rps =0
+                let rps = 0
                 this.playerList.forEach(player=>{
                   if(player.rps===-1){
                     rps = Math.floor(Math.random() * listRandom.length);
@@ -110,12 +110,14 @@ export default class Room {
                   this.preGameDraws++
                   setTimeout(()=>{
                     io.in(this.roomID).emit("preGameAgain","")
+                    io.in(this.roomID).emit("setTimer",""+timerMax)
                     this.SelectionTimer(timerMax)
                     this.playerList.forEach(p=>{
                       p.rps=-1
                     })
+
                   },2000)
-                }else{
+                  }else{
                   // houve um vencedor.
 
                   // vamos resetar o preGameDraws
@@ -124,7 +126,7 @@ export default class Room {
                   // vamos para proxima etapa, embaralhar
                   setTimeout(()=>{
                     io.in(this.roomID).emit("scramble",winner)
-                    io.in(this.roomID).emit("setTimer","5")
+                    io.in(this.roomID).emit("setTimer",""+timerMax)
     
                   },5000)
 

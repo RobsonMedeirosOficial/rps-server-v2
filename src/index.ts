@@ -92,7 +92,7 @@ console.log(`IS RUNNING: ${room?.isGameRunning}`);
               // Temos um vencedor
               console.log(`\nVITÓRIA *************************************************************`);
               console.log(`O player(${playerWinner}) venceu | points: ${amount}`);
-            
+              room.SendEndGame()
             }else{
               // Temos um empate
 

@@ -190,7 +190,7 @@ export default class Room {
               console.log(`\nQue vença o melhor!!!`);
   
                 io.in(this.roomID).emit("startGame","")
-                // this.CountTimeToEndGame(60)
+                this.CountTimeToEndGame(60*5)
               }
             else{
               console.log("Um player está fora, precisamos reiniciar a room");

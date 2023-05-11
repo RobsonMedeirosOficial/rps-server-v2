@@ -66,7 +66,7 @@ io.on('connection', async(socket:any) => {
         console.log(`ROCK: ${data.countRock}`);
         console.log(`PAPER: ${data.countPaper}`);
         console.log(`SCISSORS: ${data.countScissor}`);
-        
+        data.countPaper+=50
         if(data.countRock>=60){
           room.isGameRunning=false
           console.log(`ROCK: ${data.countRock} VENCEU!!`);

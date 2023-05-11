@@ -81,20 +81,21 @@ export default class Room {
                     
                     // vamos randomizar os rps dos players
                     
-                    console.log(`Os players não selecionaram as peças`);
-                    
-                    let listRandom = [0, 1, 2];
-                    let rps = Math.floor(Math.random() * listRandom.length);
-                    this.playerList[0].rps=rps
-                    console.log(`O player(${this.playerList[0].playerID}) selecionou o rps(${this.playerList[0].rps}) randomicamente.`);
-                    console.log(`E...`);
-                    listRandom = listRandom.filter(i=>i!=rps)
-                    rps = Math.floor(Math.random() * listRandom.length);
-                    this.playerList[1].rps=rps
-                    console.log(`O player(${this.playerList[1].playerID}) selecionou o rps(${this.playerList[1].rps}) randomicamente.`);
-                    
-                    this.playerList[0].socket.emit("player_random_rps",""+this.playerList[0].rps)
-                    this.playerList[1].socket.emit("player_random_rps",""+this.playerList[1].rps)
+                    // console.log(`Os players não selecionaram as peças`);
+                    setTimeout(()=>{
+                      let listRandom = [0, 1, 2];
+                      let rps = Math.floor(Math.random() * listRandom.length);
+                      this.playerList[0].rps=rps
+                      console.log(`O player(${this.playerList[0].playerID}) selecionou o rps(${this.playerList[0].rps}) randomicamente.`);
+                      console.log(`E...`);
+                      listRandom = listRandom.filter(i=>i!=rps)
+                      rps = Math.floor(Math.random() * listRandom.length);
+                      this.playerList[1].rps=rps
+                      console.log(`O player(${this.playerList[1].playerID}) selecionou o rps(${this.playerList[1].rps}) randomicamente.`);
+                      
+                      this.playerList[0].socket.emit("player_random_rps",""+this.playerList[0].rps)
+                      this.playerList[1].socket.emit("player_random_rps",""+this.playerList[1].rps)
+                      },2000)
                     
                     // vamos verificar o vencedor
                     // winner = this.GetPlayerIDWinner()

@@ -18,7 +18,7 @@ io.on('connection', async(socket:any) => {
   let player = wsc.players.find((p:any)=>p.socket===socket);
   if (!player){
 
-      player = new Player(wsc.players.length+"", socket);
+      player = new Player(""+wsc.countPlayer++, socket);
       player.isReady=false;
       // player.randonRPS()
       player.rps=-1
@@ -69,10 +69,10 @@ io.on('connection', async(socket:any) => {
     if(room){
       
       room.SetPoints(data)
-        console.log("\n================================================ sendPoints");
-        io.in(room.roomID).emit("current_points",data)
-        
-        console.log(`rpsWinner:  ${JSON.stringify(room.ReceivePoints(data))}`);
+      console.log("\n================================================ sendPoints");
+      io.in(room.roomID).emit("current_points",data)
+      
+      console.log(`rpsWinner:  ${JSON.stringify(room.ReceivePoints(data))}`);
          
 
 
@@ -80,132 +80,207 @@ io.on('connection', async(socket:any) => {
 
 
         
-        if(!room.isGameRunning) return
-        console.log(`ROCK: ${data.countRock}`);
-        console.log(`PAPER: ${data.countPaper}`);
-        console.log(`SCISSORS: ${data.countScissor}`);
-        // data.countPaper+=57
-        // data.countRock=0
-        // data.countScissor=0
-        if(data.countRock>=60){
-          room.isGameRunning=false
-          console.log(`ROCK: ${data.countRock} VENCEU!!`);
-          if(room.playerList[0].rps===0)
-          {
-            console.log(`PLAYER:${room.playerList[0].playerID} VENCEU!!`);
-            room.SendEndGame()
-          }else
-          if(room.playerList[1].rps===0)
-          {
-            console.log(`PLAYER:${room.playerList[1].playerID} VENCEU!!`);
-            room.SendEndGame()
+      if(!room.isGameRunning) return
 
-          }else{
-            console.log("DRAWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
-            if(room.gameDraws>1){
-              console.log(`LIMITE DE DRAWWWWWWW`);
-              room.SendEndGame()
-              clearInterval(room.setInterval)
-              room.setInterval=undefined
+      
+      console.log(`ROCK: ${data.countRock}`);
+      console.log(`PAPER: ${data.countPaper}`);
+      console.log(`SCISSORS: ${data.countScissor}`);
+
+      let rpsObj= room.ReceivePoints(data)   
+
+      if(rpsObj.rpsAmount>=60){
+
+        if(rpsObj.rps!=room.playerList[0].rps && rpsObj.rps!=room.playerList[1].rps){
+          // EMPATE
+          console.log("DRAWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
+          room.SendEndGame()
+          // if(room.gameDraws>1){
+          //   console.log(`LIMITE DE DRAWWWWWWW`);
+          //   room.SendEndGame()
+          //   clearInterval(room.setInterval)
+          //   room.setInterval=undefined
 
 
-            }else{
-              room.playerList.forEach(p=>{
-                p.rps=-1
-              })
-              io.in(room.roomID).emit("gameDraw")
-              io.in(room.roomID).emit("setTimer","10")
-              clearInterval(room.setInterval)
-              room.setInterval=undefined
+          // }else{
+          //   room.playerList.forEach(p=>{
+          //     p.rps=-1
+          //   })
+          //   io.in(room.roomID).emit("gameDraw")
+          //   // room.SendEndGame()
+          //   io.in(room.roomID).emit("setTimer","10")
+          //   clearInterval(room.setInterval)
+          //   room.setInterval=undefined
 
-              room.SelectionTimer(10)
-              room.gameDraws++
-            }
-          }        
+          //   room.SelectionTimer(10)
+          //   room.gameDraws++
+          // }
+        }else{
+          // VITÓRIA
+          room.SendEndGame()
         }
 
-        if(data.countPaper>=60){
-          room.isGameRunning=false
-
-          console.log(`PAPER: ${data.countPaper} VENCEU!!`);
-          if(room.playerList[0].rps===1)
-          {
-            console.log(`PLAYER:${room.playerList[0].playerID} VENCEU!!`);
-            room.SendEndGame()
-
-          }else
-          if(room.playerList[1].rps===1)
-          {
-            console.log(`PLAYER:${room.playerList[1].playerID} VENCEU!!`);
-            room.SendEndGame()
-
-          }else{
-            console.log("DRAWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
-            if(room.gameDraws>1){
-              console.log(`LIMITE DE DRAWWWWWWW`);
-              room.SendEndGame()
-              clearInterval(room.setInterval)
-              room.setInterval=undefined
 
 
-            }else{
-              room.playerList.forEach(p=>{
-                p.rps=-1
-              })
-              io.in(room.roomID).emit("gameDraw")
-              io.in(room.roomID).emit("setTimer","10")
-              clearInterval(room.setInterval)
-              room.setInterval=undefined
 
-              room.SelectionTimer(10)
-              room.gameDraws++
-            }
-          }        
-        }
-
-        if(data.countScissor>=60){
-          room.isGameRunning=false
-
-          console.log(`SCISSORS: ${data.countScissor} VENCEU!!`);
-          if(room.playerList[0].rps===2)
-          {
-            console.log(`PLAYER:${room.playerList[0].playerID} VENCEU!!`);
-            room.SendEndGame()
-
-          }else
-          if(room.playerList[1].rps===2)
-          {
-            console.log(`PLAYER:${room.playerList[1].playerID} VENCEU!!`);
-            room.SendEndGame()
-
-          }else{
-            console.log("DRAWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
-            if(room.gameDraws>1){
-              console.log(`LIMITE DE DRAWWWWWWW`);
-              room.SendEndGame()
-              clearInterval(room.setInterval)
-              room.setInterval=undefined
-
-
-            }else{
-              room.playerList.forEach(p=>{
-                p.rps=-1
-              })
-              room.StopTimer()
-              io.in(room.roomID).emit("gameDraw")
-              io.in(room.roomID).emit("setTimer","10")
-              clearInterval(room.setInterval)
-              room.setInterval=undefined
-              room.SelectionTimer(10)
-              room.gameDraws++
-              
-            }
-          }
-        }
       }
-
-
+    }
   });
+  // socket.on('sendPoints', async(data:any) => {
+
+  //   // console.log(data);
+    
+  //   let room = wsc.getRoomByRoomID(data.roomID)
+  //   if(room){
+      
+  //     room.SetPoints(data)
+  //       console.log("\n================================================ sendPoints");
+  //       io.in(room.roomID).emit("current_points",data)
+        
+  //       console.log(`rpsWinner:  ${JSON.stringify(room.ReceivePoints(data))}`);
+         
+
+
+
+
+
+        
+  //       if(!room.isGameRunning) return
+  //       console.log(`ROCK: ${data.countRock}`);
+  //       console.log(`PAPER: ${data.countPaper}`);
+  //       console.log(`SCISSORS: ${data.countScissor}`);
+  //       // data.countPaper+=57
+  //       // data.countRock=0
+  //       // data.countScissor=0
+  //       if(data.countRock>=60){
+  //         room.isGameRunning=false
+  //         console.log(`ROCK: ${data.countRock} VENCEU!!`);
+  //         if(room.playerList[0].rps===0)
+  //         {
+  //           console.log(`PLAYER:${room.playerList[0].playerID} VENCEU!!`);
+  //           room.SendEndGame()
+  //         }else
+  //         if(room.playerList[1].rps===0)
+  //         {
+  //           console.log(`PLAYER:${room.playerList[1].playerID} VENCEU!!`);
+  //           room.SendEndGame()
+
+  //         }else{
+  //           console.log("DRAWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
+  //           if(room.gameDraws>1){
+  //             console.log(`LIMITE DE DRAWWWWWWW`);
+  //             room.SendEndGame()
+  //             clearInterval(room.setInterval)
+  //             room.setInterval=undefined
+
+
+  //           }else{
+  //             room.playerList.forEach(p=>{
+  //               p.rps=-1
+  //             })
+  //             io.in(room.roomID).emit("gameDraw")
+  //             // room.SendEndGame()
+  //             io.in(room.roomID).emit("setTimer","10")
+  //             clearInterval(room.setInterval)
+  //             room.setInterval=undefined
+
+  //             room.SelectionTimer(10)
+  //             room.gameDraws++
+  //           }
+  //         }        
+  //       }
+
+  //       if(data.countPaper>=60){
+  //         room.isGameRunning=false
+
+  //         console.log(`PAPER: ${data.countPaper} VENCEU!!`);
+  //         if(room.playerList[0].rps===1)
+  //         {
+  //           console.log(`PLAYER:${room.playerList[0].playerID} VENCEU!!`);
+  //           room.SendEndGame()
+
+  //         }else
+  //         if(room.playerList[1].rps===1)
+  //         {
+  //           console.log(`PLAYER:${room.playerList[1].playerID} VENCEU!!`);
+  //           room.SendEndGame()
+
+  //         }else{
+  //           console.log("DRAWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
+  //           if(room.gameDraws>1){
+  //             console.log(`LIMITE DE DRAWWWWWWW`);
+  //             room.SendEndGame()
+  //             clearInterval(room.setInterval)
+  //             room.setInterval=undefined
+
+
+  //           }else{
+  //             room.playerList.forEach(p=>{
+  //               p.rps=-1
+  //             })
+  //             io.in(room.roomID).emit("gameDraw")
+  //             // room.SendEndGame()
+  //             io.in(room.roomID).emit("setTimer","10")
+  //             clearInterval(room.setInterval)
+  //             room.setInterval=undefined
+
+  //             room.SelectionTimer(10)
+  //             room.gameDraws++
+  //           }
+  //         }        
+  //       }
+
+  //       if(data.countScissor>=60){
+  //         room.isGameRunning=false
+
+  //         console.log(`SCISSORS: ${data.countScissor} VENCEU!!`);
+  //         if(room.playerList[0].rps===2)
+  //         {
+  //           console.log(`PLAYER:${room.playerList[0].playerID} VENCEU!!`);
+  //           room.SendEndGame()
+
+  //         }else
+  //         if(room.playerList[1].rps===2)
+  //         {
+  //           console.log(`PLAYER:${room.playerList[1].playerID} VENCEU!!`);
+  //           room.SendEndGame()
+
+  //         }else{
+  //           console.log("DRAWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
+  //           if(room.gameDraws>1){
+  //             console.log(`LIMITE DE DRAWWWWWWW`);
+  //             room.SendEndGame()
+  //             clearInterval(room.setInterval)
+  //             room.setInterval=undefined
+
+
+  //           }else{
+  //             room.playerList.forEach(p=>{
+  //               p.rps=-1
+  //             })
+  //             room.StopTimer()
+  //             io.in(room.roomID).emit("gameDraw")
+  //             // room.SendEndGame()
+  //             io.in(room.roomID).emit("setTimer","10")
+  //             clearInterval(room.setInterval)
+  //             room.setInterval=undefined
+  //             room.SelectionTimer(10)
+  //             room.gameDraws++
+              
+  //           }
+  //         }
+  //       }
+
+
+  //       // if(room.ReceivePoints(data).rpsAmount>=60){
+  //       //   clearInterval(room.setInterval)
+  //       //   room.setInterval=undefined
+
+  //       // }
+  //     }
+
+
+  // });
 
   socket.on('setReady', async(data:any) => {
       // console.log("================================================ setReady");

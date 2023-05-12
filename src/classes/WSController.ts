@@ -115,16 +115,16 @@ console.log(`\nFIND MATCH <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`)
     
     // Precisamos verificar se o player está em uma room practice e tenha um matchID
     // para remove-lo antes de iniciar uma busca por partida scoremilk (play)
-    // if(matchID != ""){
-    //   console.log(`O player(${player.playerID}) saiu da room(${player.roomID}).`);
-
-    //   let room = this.rooms.find(r=>r.matchID==="" && r.roomID===player?.roomID)
-    //   if(room){
-    //     io.in(room.roomID).emit("removePlayer","")
-    //     player.socket.leave(room.roomID)
-    //     player.roomID=""
-    //   }
-    // }
+    if(matchID != ""){
+      
+      let room = this.rooms.find(r=>r.matchID==="" && r.roomID===player?.roomID)
+      if(room){
+        console.log(`O player(${player.playerID}) saiu da room(${player.roomID}).`);
+        io.in(room.roomID).emit("removePlayer","")
+        player.socket.leave(room.roomID)
+        player.roomID=""
+      }
+    }
     
     
     

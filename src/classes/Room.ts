@@ -526,6 +526,10 @@ export default class Room {
 
 
     SendEndGame(isEndGame=false){
+      if(this.setInterval){
+        clearInterval(this.setInterval)
+        this.setInterval=undefined
+      }
       let playerList:any[]=[]
       this.playerList.forEach(p => {
         playerList.push(

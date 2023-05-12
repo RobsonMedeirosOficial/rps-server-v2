@@ -60,8 +60,7 @@ io.on('connection', async(socket:any) => {
       
       room.SetPoints(data)
         console.log("\n================================================ sendPoints");
-        io.in(room.roomID).emit("current_points",data)
-
+        
         if(!room.isGameRunning) return
         console.log(`ROCK: ${data.countRock}`);
         console.log(`PAPER: ${data.countPaper}`);
@@ -69,6 +68,7 @@ io.on('connection', async(socket:any) => {
         data.countPaper+=57
         data.countRock=0
         data.countScissor=0
+        io.in(room.roomID).emit("current_points",data)
         if(data.countRock>=60){
           room.isGameRunning=false
           console.log(`ROCK: ${data.countRock} VENCEU!!`);

@@ -43,6 +43,18 @@ io.on('connection', async(socket:any) => {
 
       io.in(data.roomID).emit("typeRPS",data)
   });
+  socket.on('pei', async(data:any) => {
+      console.log("\n================================================ PEI");
+      wsc.players.forEach(p=>{
+        console.log(`\n----------------------------------------------------`);
+        
+        let p2 = wsc.ReturnPlayerChangedSocketType(p)
+      console.log(p2);
+      })
+
+      console.log(`\n`);
+      
+  });
   socket.on('endGame', async(data:any) => {
       console.log("================================================ endGame");
       console.log(data);

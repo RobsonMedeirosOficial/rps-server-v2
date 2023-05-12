@@ -84,9 +84,12 @@ io.on('connection', async(socket:any) => {
 
           }else{
             console.log("DRAWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
-            if(room.gameDraws>0){
+            if(room.gameDraws>1){
               console.log(`LIMITE DE DRAWWWWWWW`);
               room.SendEndGame()
+              clearInterval(room.setInterval)
+              room.setInterval=undefined
+
 
             }else{
               room.playerList.forEach(p=>{
@@ -120,9 +123,12 @@ io.on('connection', async(socket:any) => {
 
           }else{
             console.log("DRAWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
-            if(room.gameDraws>0){
+            if(room.gameDraws>1){
               console.log(`LIMITE DE DRAWWWWWWW`);
               room.SendEndGame()
+              clearInterval(room.setInterval)
+              room.setInterval=undefined
+
 
             }else{
               room.playerList.forEach(p=>{
@@ -156,9 +162,12 @@ io.on('connection', async(socket:any) => {
 
           }else{
             console.log("DRAWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
-            if(room.gameDraws>0){
+            if(room.gameDraws>1){
               console.log(`LIMITE DE DRAWWWWWWW`);
               room.SendEndGame()
+              clearInterval(room.setInterval)
+              room.setInterval=undefined
+
 
             }else{
               room.playerList.forEach(p=>{

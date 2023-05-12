@@ -27,7 +27,7 @@ io.on('connection', async(socket:any) => {
       // let room: Room | undefined = CreateOrJoinRoom(socket)
 
       let p = wsc.ReturnPlayerChangedSocketType(player)
-      // console.log(p);
+      console.log(p);
       socket.emit('newPlayer', p)
       // io.in(player.roomID).emit('newPlayer', p)
       wsc.PlayersOnline();

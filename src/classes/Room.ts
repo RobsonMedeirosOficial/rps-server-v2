@@ -292,6 +292,37 @@ export default class Room {
       }
     }
 
+
+    ReceivePoints(data:any){
+      let rpsList=[{rps:0,rpsAmount:0},{rps:1,rpsAmount:0},{rps:2,rpsAmount:0}]
+      // Lista de rps com o rps e rpsAmount de cada peça
+      rpsList[0].rpsAmount=data.countRock
+      rpsList[1].rpsAmount=data.countPaper
+      rpsList[2].rpsAmount=data.countScissor
+  
+      // Organiza a rpsList do maior para o menor
+      rpsList = rpsList.sort((a,b)=>b.rpsAmount - a.rpsAmount)
+      // Selecionamos o rps de maior valor e colocamos em rpsWinner
+      let rpsWinner = rpsList[0]
+  
+      // Vamos distribuir os pontos de cada player de acordo com seu rps
+      for (let pIndex = 0; pIndex < this.playerList.length; pIndex++) {
+  
+        if(this.playerList[pIndex].rps==0){
+          this.playerList[pIndex].rpsAmount=data.countRock
+        }
+        if(this.playerList[pIndex].rps==1){
+          this.playerList[pIndex].rpsAmount=data.countPaper
+        }
+        if(this.playerList[pIndex].rps==2){
+          this.playerList[pIndex].rpsAmount=data.countScissor
+        }
+      }
+
+      return rpsWinner
+    }
+
+
     CheckWinner(data:any){
   
       if(this.CheckPlayersInRoom()){

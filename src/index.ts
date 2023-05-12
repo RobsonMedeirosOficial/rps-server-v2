@@ -72,6 +72,14 @@ io.on('connection', async(socket:any) => {
         console.log("\n================================================ sendPoints");
         io.in(room.roomID).emit("current_points",data)
         
+        console.log(`rpsWinner:  ${room.ReceivePoints(data)}`);
+         
+
+
+
+
+
+        
         if(!room.isGameRunning) return
         console.log(`ROCK: ${data.countRock}`);
         console.log(`PAPER: ${data.countPaper}`);

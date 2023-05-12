@@ -60,15 +60,15 @@ io.on('connection', async(socket:any) => {
       
       room.SetPoints(data)
         console.log("\n================================================ sendPoints");
+        io.in(room.roomID).emit("current_points",data)
         
         if(!room.isGameRunning) return
         console.log(`ROCK: ${data.countRock}`);
         console.log(`PAPER: ${data.countPaper}`);
         console.log(`SCISSORS: ${data.countScissor}`);
-        data.countPaper+=57
-        data.countRock=0
-        data.countScissor=0
-        io.in(room.roomID).emit("current_points",data)
+        // data.countPaper+=57
+        // data.countRock=0
+        // data.countScissor=0
         if(data.countRock>=60){
           room.isGameRunning=false
           console.log(`ROCK: ${data.countRock} VENCEU!!`);
@@ -84,7 +84,7 @@ io.on('connection', async(socket:any) => {
 
           }else{
             console.log("DRAWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
-            if(room.gameDraws>1){
+            if(room.gameDraws>0){
               console.log(`LIMITE DE DRAWWWWWWW`);
               room.SendEndGame()
 
@@ -120,7 +120,7 @@ io.on('connection', async(socket:any) => {
 
           }else{
             console.log("DRAWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
-            if(room.gameDraws>1){
+            if(room.gameDraws>0){
               console.log(`LIMITE DE DRAWWWWWWW`);
               room.SendEndGame()
 
@@ -156,7 +156,7 @@ io.on('connection', async(socket:any) => {
 
           }else{
             console.log("DRAWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW");
-            if(room.gameDraws>1){
+            if(room.gameDraws>0){
               console.log(`LIMITE DE DRAWWWWWWW`);
               room.SendEndGame()
 

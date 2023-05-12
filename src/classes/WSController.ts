@@ -115,16 +115,16 @@ console.log(`\nFIND MATCH <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`)
     
     // Precisamos verificar se o player está em uma room practice e tenha um matchID
     // para remove-lo antes de iniciar uma busca por partida scoremilk (play)
-    if(matchID != ""){
-      console.log(`O player(${player.playerID}) saiu da room(${player.roomID}).`);
+    // if(matchID != ""){
+    //   console.log(`O player(${player.playerID}) saiu da room(${player.roomID}).`);
 
-      let room = this.rooms.find(r=>r.matchID==="" && r.roomID===player?.roomID)
-      if(room){
-        io.in(room.roomID).emit("removePlayer","")
-        player.socket.leave(room.roomID)
-        player.roomID=""
-      }
-    }
+    //   let room = this.rooms.find(r=>r.matchID==="" && r.roomID===player?.roomID)
+    //   if(room){
+    //     io.in(room.roomID).emit("removePlayer","")
+    //     player.socket.leave(room.roomID)
+    //     player.roomID=""
+    //   }
+    // }
     
     
     
@@ -166,27 +166,41 @@ CreateOrJoinRoom(player: Player){
     }
 
     if(room){
-      console.log(`O player(${player.playerID}) encontrou a room(${room.roomID})(${room.matchID}) e entrou.`);
-      
-      // Junte este player a room
-      player.roomID=room.roomID
-      player.socket.emit("joinRoom",player.roomID)
-      player.socket.join(room.roomID)
-      room.playerList.push(player)
+      let isInRoom = false
+      room.playerList.forEach(p=>{
+        if(p.playerID === player.playerID){
+          isInRoom=true
+        }
+      })
 
-      // se a room estiver cheia finalmente, fale para o primeiro player que pode instanciar
-      if(room.playerList.length>=room.maxPlayer){
-        room.playerList[0].socket.emit("can_instantiate")
-        io.in(room.roomID).emit("setTimer","10")
-        //-------------------------
-        setTimeout(() => {
-          room?.SelectionTimer(10);
-        }, 2)
-        
+      if(!isInRoom)
+      {
+        console.log(`O player(${player.playerID}) encontrou a room(${room.roomID})(${room.matchID}) e entrou.`);
+      
+        // Junte este player a room
+        player.roomID=room.roomID
+        player.socket.emit("joinRoom",player.roomID)
+        player.socket.join(room.roomID)
+        room.playerList.push(player)
+  
+        // se a room estiver cheia finalmente, fale para o primeiro player que pode instanciar
+        if(room.playerList.length>=room.maxPlayer){
+          room.playerList[0].socket.emit("can_instantiate")
+          io.in(room.roomID).emit("setTimer","10")
+          //-------------------------
+          setTimeout(() => {
+            room?.SelectionTimer(10);
+          }, 2)
+          
+          
+        }
+  
+        room.SendRPSToAll(player.socket)      
+      }else{
+        console.log(`\n\nO player(${player.playerID})(${player.matchID}) tentou entrar novamente na room(${room.roomID})(${room.matchID})`);
         
       }
 
-      room.SendRPSToAll(player.socket)
     }else{
       // Crie uma nova room
       

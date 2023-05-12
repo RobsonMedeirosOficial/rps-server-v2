@@ -170,6 +170,7 @@ CreateOrJoinRoom(player: Player){
       
       // Junte este player a room
       player.roomID=room.roomID
+      player.socket.emit("joinRoom",player.roomID)
       player.socket.join(room.roomID)
       room.playerList.push(player)
 
@@ -196,6 +197,7 @@ CreateOrJoinRoom(player: Player){
         room.maxPlayer=2
         room.timerMax=5
         player.roomID=room.roomID
+        player.socket.emit("joinRoom",player.roomID)
         player.socket.join(room.roomID)
         room.playerList.push(player)
         console.log(`O player(${player.playerID}) não encontrou uma room disponível\n então criou a room(${room.roomID})(${room.matchID}) e entrou.`);

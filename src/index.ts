@@ -25,8 +25,6 @@ io.on('connection', async(socket:any) => {
       wsc.players.push(player);
       console.log(`Um novo player na area: player(${player.playerID})(${player.socket.id})`);
       // let room: Room | undefined = CreateOrJoinRoom(socket)
-      wsc.CreateOrJoinRoom(socket)
-
 
       let p = wsc.ReturnPlayerChangedSocketType(player)
       // console.log(p);
@@ -184,10 +182,6 @@ io.on('connection', async(socket:any) => {
             }
           }
         }
-
-
-
-
       }
 
 
@@ -240,6 +234,10 @@ io.on('connection', async(socket:any) => {
 
     io.in(data.roomID).emit("position",data)
   // console.log(data);
+  });
+  socket.on('findMatch', async(data:any) => {
+    //console.log(data);
+    wsc.FindMatch(socket,data)
   });
 
   socket.on('player_set_rps', async(data:any) => {

@@ -106,7 +106,39 @@ ReturnPlayerChangedSocketType(player:Player){
 }
 
 
-CreateOrJoinRoom(socket:Socket){
+FindMatch(socket: Socket, matchID:string){
+console.log(`\nFIND MATCH <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`)
+
+  let player: Player | undefined = this.getPlayerBySocket(socket)
+  if(player){
+    console.log(`O player(${player.playerID})roomID(${player.roomID}) entrou em uma busca por partida.`);
+    
+    // Precisamos verificar se o player está em uma room practice e tenha um matchID
+    // para remove-lo antes de iniciar uma busca por partida scoremilk (play)
+    if(matchID != ""){
+      console.log(`O player(${player.playerID}) saiu da room(${player.roomID}).`);
+
+      let room = this.rooms.find(r=>r.matchID==="" && r.roomID===player?.roomID)
+      if(room){
+        io.in(room.roomID).emit("removePlayer","")
+        player.socket.leave(room.roomID)
+        player.roomID=""
+      }
+    }
+    
+    
+    
+    player.matchID=matchID
+    console.log(`O player(${player.playerID}) recebeu o matchID: ${player.matchID}.`);
+
+    
+
+
+    wsc.CreateOrJoinRoom(player)
+  }
+}
+
+CreateOrJoinRoom(player: Player){
     //#######################################################################
     //#1) O primeiro jogador a se conectar cria a room.
     
@@ -117,18 +149,24 @@ CreateOrJoinRoom(socket:Socket){
     // a peça é iniciado.
     //#######################################################################
 
+  
 
 
 
-
-  let player: Player | undefined = this.getPlayerBySocket(socket)
+  
   if(player){
 
-    let room = this.rooms.find(r=>r.playerList.length < r.maxPlayer)
+    let room:Room | undefined = undefined
+    if(player.matchID!=""){ // Play
+      
+      room=this.rooms.find(r=>r.matchID===player?.matchID)
 
+    }else{ // Practice
+      room=this.rooms.find(r=>r.playerList.length < r.maxPlayer)
+    }
 
     if(room){
-      console.log(`O player(${player.playerID}) encontrou a room(${room.roomID}) e entrou.`);
+      console.log(`O player(${player.playerID}) encontrou a room(${room.roomID})(${room.matchID}) e entrou.`);
       
       // Junte este player a room
       player.roomID=room.roomID
@@ -147,18 +185,20 @@ CreateOrJoinRoom(socket:Socket){
         
       }
 
-      room.SendRPSToAll(socket)
+      room.SendRPSToAll(player.socket)
     }else{
       // Crie uma nova room
+      
       room = new Room(`${this.countRoom++}`)
       if(room){
         this.rooms.push(room)
+        room.matchID=player.matchID
         room.maxPlayer=2
         room.timerMax=5
-        console.log(`O player(${player.playerID}) não encontrou uma room disponível\n então criou a room(${room.roomID}) e entrou.`);
         player.roomID=room.roomID
         player.socket.join(room.roomID)
         room.playerList.push(player)
+        console.log(`O player(${player.playerID}) não encontrou uma room disponível\n então criou a room(${room.roomID})(${room.matchID}) e entrou.`);
         }
     }
 

@@ -1,6 +1,7 @@
 import { Socket } from "socket.io";
 
 export default class Player {
+  matchID: string
   roomID: string;
   playerID: string;
   socket: Socket;
@@ -15,6 +16,7 @@ export default class Player {
   // -------------------------------------------
 
   constructor(playerID:string, socket:Socket) {
+    this.matchID = ""
     this.playerID = playerID;
     this.roomID = "";
     this.socket = socket;

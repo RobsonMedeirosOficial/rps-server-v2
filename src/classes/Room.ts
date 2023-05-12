@@ -6,6 +6,7 @@ import { wsc } from './WSController';
 
 export default class Room {
     roomID: string;
+    matchID:string;
     playerList: Player[];
     maxPlayer: number;
     timer: number;
@@ -18,6 +19,7 @@ export default class Room {
     isGameRunning:boolean
     constructor(id: string = "") {
       this.roomID = id;
+      this.matchID="";
       this.playerList = [];
       this.maxPlayer = 2;
       this.timer = 0; // removi a tipagem 'any' e atribui um valor inicial

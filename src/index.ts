@@ -72,7 +72,7 @@ io.on('connection', async(socket:any) => {
         console.log("\n================================================ sendPoints");
         io.in(room.roomID).emit("current_points",data)
         
-        console.log(`rpsWinner:  ${room.ReceivePoints(data)}`);
+        console.log(`rpsWinner:  ${JSON.stringify(room.ReceivePoints(data))}`);
          
 
 
